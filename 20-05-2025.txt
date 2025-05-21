@@ -1,0 +1,59 @@
+CREATE DATABASE TUESDAY;
+USE TUESDAY;
+DROP TABLE CATEGORY;
+CREATE TABLE CATEGORY(
+CID INT PRIMARY KEY,
+CNAME VARCHAR(25),
+CDETAILS VARCHAR(25)
+);
+
+INSERT INTO CATEGORY VALUES(101,'ELECTRONICS', 'AC');
+INSERT INTO CATEGORY VALUES(102,'FURNITURES', 'BED');
+
+SELECT * FROM CATEGORY;
+DROP TABLE PRODUCTS;
+CREATE TABLE PRODUCTS(
+PID INT primary KEY,
+PNAME VARCHAR(25),
+PDETAILS VARCHAR(25),
+CID INT,
+FOREIGN KEY PRODUCTS(CID) REFERENCES CATEGORY(CID) ON UPDATE CASCADE
+);
+
+DELETE FROM CATEGORY WHERE CID=102;
+DESC PRODUCTS;
+
+INSERT INTO PRODUCTS VALUES(501,'IPHONE 16', '8GB RAM',105);
+SELECT * FROM PRODUCTS;
+
+# create table - delete constraints, not null 
+# alter table 
+#add constraint uc_product 
+
+
+# alter table persons
+# add constraint pk_person prnimary key(id, lastname);
+
+#drop a pk constraint
+#alter tbles persons
+#drop primary key
+
+
+#drop a foreign key constraint
+# alter table persons
+# drop foreign key fk_personorder;
+
+
+#default
+CREATE TABLE Persons ( 
+ID int NOT NULL, 
+LastName varchar(255) NOT NULL, 
+FirstName varchar(255), 
+Age int, 
+City varchar(255) DEFAULT 'Coimbatore' 
+); 
+desc persons;
+insert into persons value(121,'mareedu','gormi',19,'vijayawada');
+insert into persons value(123,'mareedu','dharsha',21,'');
+
+select * from persons;
