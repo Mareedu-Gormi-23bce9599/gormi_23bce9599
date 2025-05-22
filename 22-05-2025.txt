@@ -1,0 +1,103 @@
+USE TUESDAY;
+SELECT * FROM WORKER1;
+##
+SELECT MAX(DEPARTMENT) FROM WORKER1 GROUP BY DEPARTMENT ;
+
+# which dept have lesser salary count
+SELECT COUNT(department)
+FROM worker1
+GROUP BY department
+ORDER BY COUNT(department) DESC
+LIMIT 1;
+
+
+select department, count(department) 
+from worker1 
+group by department having count(department)>3;
+
+SELECT department, SUM(salary)
+FROM worker
+GROUP BY department
+ORDER BY SUM(salary) DESC
+LIMIT 1 OFFSET 1; # second largest -> 2-1 = 1 -> offset 1
+# for seventh largest - limit 1 offset 6
+
+#SUB QUERIES 
+select salary,first_name, department 
+from worker1 
+where salary = (select max(salary) from worker1);
+
+select * from worker 
+where salary <> (select min(salary) from worker);
+
+SELECT first_name, department 
+FROM Worker 
+WHERE salary > (SELECT AVG(salary) FROM Worker);
+
+SELECT * FROM WORKER 
+WHERE JOINING_DATE = (SELECT MIN(JOINING_DATE) FROM WORKER);
+SELECT * FROM WORKER 
+WHERE JOINING_DATE = (SELECT MAX(JOINING_DATE) FROM WORKER);
+
+SELECT Worker1ID, Name, Department, Salary
+FROM Worker1 W1
+WHERE Salary > (
+    SELECT AVG(Salary)
+    FROM Worker1 W2
+    WHERE W2.Department = W1.Department
+);
+
+
+## JOINS
+create table student(
+s_id int,
+s_name varchar(25)
+);
+insert into student values 
+(101,'jayanth'),(102,'karthik'),(103,'Praveen'),(105,'mahesh'),(106,'Arun');
+
+create table address(
+s_id int,
+s_address varchar(25));
+insert into address values (101,'coimbatore'),(104,'chennai'),(105,'pune');
+
+select * from 
+student cross join address;
+
+#inner - same name and datatype
+select * from 
+student inner join address 
+where student.s_id = address.s_id;
+
+#natural - same name and datatype with a common attribute
+
+# outer join - left, right, full
+# left outer join
+select * from 
+student left outer join address 
+on student.s_id = address.s_id;
+#right outer join
+select * from 
+student right outer join address 
+on student.s_id = address.s_id;
+
+select * from 
+student full join address;
+
+# questions on joins
+#5th highest salary without top, limit, offset
+SELECT DISTINCT Salary
+FROM Worker W1
+WHERE 4 = (
+    SELECT COUNT(DISTINCT Salary)
+    FROM Worker W2
+    WHERE W2.Salary > W1.Salary
+);
+#or
+select distinct salary
+from worker w1
+where 5 = (
+    select count(distinct salary)
+    from worker w2
+    where w2.salary >= w1.salary
+);
