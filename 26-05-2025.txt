@@ -1,0 +1,146 @@
+package CRUD_OPERATION;
+import java.util.*;
+import java.sql.*;
+
+public class crud_operation {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        crud_operation objTest = new crud_operation();
+
+        System.out.print("Enter a serial number: ");
+        String sl_no = sc.nextLine();
+        System.out.print("Enter name: ");
+        String name = sc.nextLine();
+        System.out.print("Enter marks obtained: ");
+        int mark = sc.nextInt();
+        sc.nextLine(); // consume newline
+
+        objTest.create_data(sl_no, name, mark);
+        objTest.read_data(); // read all
+        objTest.read_data_by_slno(sl_no); // read with WHERE
+        objTest.update_data(sl_no, "999", "Updated Name", "85"); // sample update
+        objTest.alter_table_drop_column(); // alter
+        objTest.delete_data("999"); // delete
+
+        sc.close();
+    }
+
+    // CREATE operation
+    public void create_data(String sl_no, String name, int mark) {
+        DB_Connection obj_DB_Connection = new DB_Connection();
+        Connection connection = obj_DB_Connection.get_connection();
+        PreparedStatement ps = null;
+        try {
+            String query = "INSERT INTO student VALUES (?, ?, ?)";
+            ps = connection.prepareStatement(query);
+            ps.setString(1, sl_no);
+            ps.setString(2, name);
+            ps.setInt(3, mark);
+            System.out.println(ps);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // READ ALL
+    public void read_data() {
+        DB_Connection obj_DB_Connection = new DB_Connection();
+        Connection connection = obj_DB_Connection.get_connection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String query = "SELECT * FROM student";
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                System.out.println("Sl no - " + rs.getObject(1)); // getObject used
+                System.out.println("name - " + rs.getNString(2)); // getNString used
+                System.out.println("mark - " + rs.getInt(3));
+                System.out.println("---");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // READ with WHERE clause
+    public void read_data_by_slno(String sl_no) {
+        DB_Connection obj_DB_Connection = new DB_Connection();
+        Connection connection = obj_DB_Connection.get_connection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String query = "SELECT * FROM student WHERE sl_no = ?";
+            ps = connection.prepareStatement(query);
+            ps.setString(1, sl_no);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                System.out.println("Single Record:");
+                System.out.println("Sl no - " + rs.getObject("sl_no"));
+                System.out.println("name - " + rs.getNString("name"));
+                System.out.println("mark - " + rs.getInt("mark"));
+            } else {
+                System.out.println("No record found.");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // UPDATE operation
+    public void update_data(String sl_no, String new_sl_no, String name, String mark) {
+        DB_Connection obj_DB_Connection = new DB_Connection();
+        Connection connection = obj_DB_Connection.get_connection();
+        PreparedStatement ps = null;
+        try {
+            String query = "UPDATE student SET sl_no = ?, name = ?, mark = ? WHERE sl_no = ?";
+            ps = connection.prepareStatement(query);
+            ps.setString(1, new_sl_no);
+            ps.setString(2, name);
+            ps.setInt(3, Integer.parseInt(mark));
+            ps.setString(4, sl_no);
+            System.out.println(ps);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // ALTER operation with check
+    public void alter_table_drop_column() {
+        String checkQuery = "SHOW COLUMNS FROM student LIKE 'age'";
+        String alterQuery = "ALTER TABLE student DROP COLUMN age";
+        try (
+            Connection connection = new DB_Connection().get_connection();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(checkQuery)
+        ) {
+            if (rs.next()) {
+                stmt.executeUpdate(alterQuery);
+                System.out.println("Column 'age' dropped successfully.");
+            } else {
+                System.out.println("Column 'age' does not exist.");
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    // DELETE operation
+    public void delete_data(String sl_no) {
+        DB_Connection obj_DB_Connection = new DB_Connection();
+        Connection connection = obj_DB_Connection.get_connection();
+        PreparedStatement ps = null;
+        try {
+            String query = "DELETE FROM student WHERE sl_no = ?";
+            ps = connection.prepareStatement(query);
+            ps.setString(1, sl_no);
+            System.out.println(ps);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
